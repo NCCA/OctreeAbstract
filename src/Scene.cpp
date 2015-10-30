@@ -12,7 +12,7 @@ Scene::Scene(ngl::Transformation *_t,  ngl::Camera *_cam)
     BoundingBox bb;
     bb.m_minx = bb.m_miny = bb.m_minz = -10.0;
     bb.m_maxx = bb.m_maxy = bb.m_maxz = 10.0;
-    collisionTree = new ParticleOctree (4, bb); // control the height of the octree
+    collisionTree.reset( new ParticleOctree (4, bb)); // control the height of the octree
 }
 
 void Scene::addParticle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Colour _c, GLfloat _r)

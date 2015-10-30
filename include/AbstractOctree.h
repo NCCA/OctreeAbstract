@@ -2,6 +2,7 @@
 #define ABSTRACTOCTREE__H_
 #include <vector>
 #include <iostream>
+#include <array>
 #include <ngl/Vec2.h>
 #include <ngl/Vec3.h>
 #include <ngl/Vec4.h>
@@ -43,7 +44,7 @@ protected :
       BoundingBox m_limit;
       int m_height;
       std::vector<V *> m_objectList;
-      TreeNode *m_child[8];
+      std::array<TreeNode *,8> m_child;
   };
 
 public:

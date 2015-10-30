@@ -87,7 +87,7 @@ class Scene
     /// @brief the wall list
     std::vector <Wall *> m_walls;
     /// @brief octree for collision detection
-    ParticleOctree  *collisionTree;
+    std::unique_ptr<ParticleOctree>  collisionTree;
 };
 
 
