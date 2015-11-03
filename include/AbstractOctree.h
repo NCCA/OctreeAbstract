@@ -6,6 +6,8 @@
 #include <ngl/Vec2.h>
 #include <ngl/Vec3.h>
 #include <ngl/Vec4.h>
+#include <memory>
+
 /// @file AbstractOctree.h
 /// @brief Octree structure for collision detection the user must impliment the
 /// pure virtual checkCollisionOnNode method for appropriate collision
@@ -30,8 +32,6 @@ public :
     ngl::Real m_minz;
     ngl::Real m_maxz;
 };
-
-
 
 
 template <class T, class VEC> class AbstractOctree
