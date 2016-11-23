@@ -1,5 +1,5 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
+#ifndef SCENE_H_
+#define SCENE_H_
 
 #include <ngl/Camera.h>
 #include <ngl/Vec3.h>

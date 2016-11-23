@@ -1,5 +1,5 @@
-#ifndef __PARTICLE__H_
-#define __PARTICLE__H_
+#ifndef PARTICLE_H_
+#define PARTICLE_H_
 
 #include <ngl/Camera.h>
 #include <ngl/Vec3.h>
@@ -33,6 +33,8 @@ public:
     /// @param[in] _parent the parent (Emitter used to query global values)
     Particle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Colour _c, GLfloat _r,  Scene *_parent);
     /// @brief  brief destructor
+    Particle( Particle &&)=default;
+    Particle & operator=( Particle &&)=default;
 
     ~Particle();
 
@@ -42,15 +44,15 @@ public:
     void update();
 
     /// @brief get current position
-    inline ngl::Vec3 const getPosition(){return m_pos;}
+    ngl::Vec3 const getPosition(){return m_pos;}
     /// @brief get current speed
-    inline ngl::Vec3 const getCurrentSpeed(){return m_dir;}
+    ngl::Vec3 const getCurrentSpeed(){return m_dir;}
     /// @brief get radius
-    inline GLfloat getRadius() const {return m_radius;}
+    GLfloat getRadius() const {return m_radius;}
     /// @brief set new position after collision
-    inline void setPosition(ngl::Vec3 _newPos){m_pos = _newPos;}
+    void setPosition(ngl::Vec3 _newPos){m_pos = _newPos;}
     /// @brief set new speed after collision
-    inline void setSpeed(ngl::Vec3 _newSpeed){m_dir = _newSpeed;}
+    void setSpeed(ngl::Vec3 _newSpeed){m_dir = _newSpeed;}
 
 protected:
     /// @brief  Position of the Particle

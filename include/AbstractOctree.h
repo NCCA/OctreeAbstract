@@ -1,5 +1,5 @@
-#ifndef ABSTRACTOCTREE__H_
-#define ABSTRACTOCTREE__H_
+#ifndef ABSTRACTOCTREE_H_
+#define ABSTRACTOCTREE_H_
 #include <vector>
 #include <iostream>
 #include <array>
@@ -22,15 +22,14 @@
 /// @brief this is the class for perfect octree tree, 3 levels,
 
 
-class BoundingBox
+struct BoundingBox
 {
-public :
-    ngl::Real m_minx;
-    ngl::Real m_maxx;
-    ngl::Real m_miny;
-    ngl::Real m_maxy;
-    ngl::Real m_minz;
-    ngl::Real m_maxz;
+  ngl::Real m_minx;
+  ngl::Real m_maxx;
+  ngl::Real m_miny;
+  ngl::Real m_maxy;
+  ngl::Real m_minz;
+  ngl::Real m_maxz;
 };
 
 
@@ -41,10 +40,17 @@ protected :
   template <class V>class TreeNode
   {
   public:
+      TreeNode()=default;
+      // get the compiler to create our rule of 0 stuff may be quicker
+      TreeNode(TreeNode &&)=default;
+      TreeNode(TreeNode &)=default;
+      TreeNode<V> & operator=(TreeNode &&)=default;
+      TreeNode<V> & operator=(TreeNode &)=default;
+
       BoundingBox m_limit;
       int m_height;
-      std::vector<V *> m_objectList;
-      std::array<TreeNode *,8> m_child;
+      std::vector< V *> m_objectList;
+      std::array<std::shared_ptr<TreeNode> ,8> m_child;
   };
 
 public:
@@ -58,7 +64,7 @@ public:
         std::cerr<<"The height of the tree is not valid\n";
         exit(EXIT_FAILURE);
       }
-      m_root = new TreeNode <T>;
+      m_root.reset(new TreeNode <T>);
       createTree(m_root, _height, _limit);
     }
 
@@ -66,22 +72,22 @@ public:
     virtual ~AbstractOctree()
     {
         deleteTreeNode(m_root);
-        delete m_root;
+        //delete m_root;
     }
 
-    void deleteTreeNode(TreeNode <T> *_node)
+    void deleteTreeNode(std::shared_ptr<TreeNode <T>> _node)
     {
-      for(int i=0;i<8;++i)
+      for(size_t i=0;i<8;++i)
       {
         if(_node->m_child[i]!=0)
         {
           deleteTreeNode(_node->m_child[i]);
-          delete _node->m_child[i];
+          //delete _node->m_child[i];
         }
       }
     }
     /// @brief create perfect tree, it is leaves level when _height==1
-    void createTree(TreeNode <T> *_parent,  int _height, BoundingBox _limit)
+    void createTree(std::shared_ptr<TreeNode <T>> _parent,  int _height, BoundingBox _limit)
     {
       _parent->m_limit = _limit;
       _parent->m_height = _height;
@@ -89,7 +95,7 @@ public:
       _height--;
       if(_height == 0) // current level is leaves, no children
       {
-        for(int i=0;i<8;++i)
+        for(size_t i=0;i<8;++i)
         {
          _parent->m_child[i]= 0;
         }
@@ -97,37 +103,37 @@ public:
       else
       {
         BoundingBox childLimit;
-        for(int i=0;i<8;++i)
+        for(size_t i=0;i<8;++i)
         {
-          _parent->m_child[i] = new TreeNode <T>;
+          _parent->m_child[i].reset(  new TreeNode <T>);
           if(i%2==0) // i = 0, 2, 4, 6
           {
             childLimit.m_minx = _limit.m_minx;
-            childLimit.m_maxx = (_limit.m_maxx+_limit.m_minx)/2.0;
+            childLimit.m_maxx = (_limit.m_maxx+_limit.m_minx)/2.0f;
           }
           else // i = 1, 3, 5, 7
           {
-            childLimit.m_minx = (_limit.m_maxx+_limit.m_minx)/2.0;
+            childLimit.m_minx = (_limit.m_maxx+_limit.m_minx)/2.0f;
             childLimit.m_maxx = _limit.m_maxx;
           }
           if(i==0 || i==1 || i==4 || i==5)
           {
             childLimit.m_miny = _limit.m_miny;
-            childLimit.m_maxy = (_limit.m_maxy + _limit.m_miny)/2.0;
+            childLimit.m_maxy = (_limit.m_maxy + _limit.m_miny)/2.0f;
           }
           else
           {
-            childLimit.m_miny = (_limit.m_maxy + _limit.m_miny)/2.0;
+            childLimit.m_miny = (_limit.m_maxy + _limit.m_miny)/2.0f;
             childLimit.m_maxy = _limit.m_maxy;
           }
           if(i<4)
           {
             childLimit.m_minz = _limit.m_minz;
-            childLimit.m_maxz = (_limit.m_maxz+_limit.m_minz)/2.0;
+            childLimit.m_maxz = (_limit.m_maxz+_limit.m_minz)/2.0f;
           }
           else
           {
-            childLimit.m_minz = (_limit.m_maxz + _limit.m_minz)/2.0;
+            childLimit.m_minz = (_limit.m_maxz + _limit.m_minz)/2.0f;
             childLimit.m_maxz = _limit.m_maxz;
           }
          createTree(_parent->m_child[i], _height, childLimit);
@@ -172,11 +178,11 @@ public:
               _pos.m_y+_r < _limit.m_miny
               );
     }
-    void addObjectToNode(TreeNode <T>  *_node, T *_p)
+    void addObjectToNode(std::shared_ptr<TreeNode <T>> _node, T *_p)
     {
       if(_node->m_height == 1) // this is the leaves level
       {
-        _node->m_objectList.push_back(_p);
+        _node->m_objectList.emplace_back(_p);
       }
       else
       {
@@ -201,7 +207,7 @@ public:
         clearObjectFromNode(m_root);
     }
 
-    void clearObjectFromNode(TreeNode <T> *_node)
+    void clearObjectFromNode(std::shared_ptr<TreeNode <T>>_node)
     {
       if(_node->m_height == 1)
       {
@@ -209,7 +215,7 @@ public:
       }
       else
       {
-        for(int i=0;i<8;++i)
+        for(size_t i=0;i<8;++i)
         {
             clearObjectFromNode(_node->m_child[i]);
         }
@@ -217,15 +223,15 @@ public:
     }
 
     /// @brief check the collision for the Ts in each leaves
-    void    checkCollision()
+    void checkCollision()
     {
-        checkCollisionOnNode(m_root);
+      checkCollisionOnNode(m_root);
     }
 
-    virtual void  checkCollisionOnNode(TreeNode <T> *_node)=0;
+    virtual void  checkCollisionOnNode(std::shared_ptr<TreeNode <T>>_node)=0;
 
   protected :
-    TreeNode <T> *m_root;
+    std::shared_ptr<TreeNode <T>> m_root;
 };
 
 #endif

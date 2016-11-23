@@ -1,5 +1,5 @@
-#ifndef PARTICLEOCTRRE_H__
-#define PARTICLEOCTRRE_H__
+#ifndef PARTICLEOCTTREE_H_
+#define PARTICLEOCTTREE_H_
 
 #include "AbstractOctree.h"
 
@@ -13,7 +13,7 @@ class ParticleOctree : public AbstractOctree <Particle,ngl::Vec3>
        AbstractOctree <Particle,ngl::Vec3> ( _height,  _limit)
      {}
 
-     virtual void  checkCollisionOnNode(TreeNode <Particle> *node);
+     virtual void  checkCollisionOnNode(std::shared_ptr<TreeNode<Particle> > node);
 
 
 
