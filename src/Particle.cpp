@@ -22,15 +22,15 @@ void Particle::draw(const ngl::Mat4 &_globalMouseTx) const
 
     ngl::ShaderLib *shader=ngl::ShaderLib::instance();
     (*shader)["nglDiffuseShader"]->use();
-    shader->setShaderParam4f("Colour",m_colour.m_r,m_colour.m_g,m_colour.m_b,m_colour.m_a);
+    shader->setUniform("Colour",m_colour);
     ngl::Transformation t;
     t.setPosition(m_pos);
     t.setScale(m_radius,m_radius,m_radius);
     ngl::Mat4 MVP=t.getMatrix() * _globalMouseTx * m_parent->getCamera()->getVPMatrix();
     normalMatrix=t.getMatrix()* _globalMouseTx*m_parent->getCamera()->getViewMatrix();
     normalMatrix.inverse();
-    shader->setRegisteredUniform("MVP",MVP);
-    shader->setRegisteredUniform("normalMatrix",normalMatrix);
+    shader->setUniform("MVP",MVP);
+    shader->setUniform("normalMatrix",normalMatrix);
 
 
     // get an instance of the VBO primitives for drawing
