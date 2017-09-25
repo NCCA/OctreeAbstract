@@ -26,9 +26,15 @@ void Particle::draw(const ngl::Mat4 &_globalMouseTx) const
     ngl::Transformation t;
     t.setPosition(m_pos);
     t.setScale(m_radius,m_radius,m_radius);
-    ngl::Mat4 MVP=t.getMatrix() * _globalMouseTx * m_parent->getCamera()->getVPMatrix();
-    normalMatrix=t.getMatrix()* _globalMouseTx*m_parent->getCamera()->getViewMatrix();
-    normalMatrix.inverse();
+    ngl::Mat4 MVP=m_parent->getCamera()->getVPMatrix()*
+                  _globalMouseTx *
+                  t.getMatrix();
+
+    normalMatrix=m_parent->getCamera()->getViewMatrix()*
+                 _globalMouseTx*
+                 t.getMatrix();
+
+    normalMatrix.inverse().transpose();
     shader->setUniform("MVP",MVP);
     shader->setUniform("normalMatrix",normalMatrix);
 

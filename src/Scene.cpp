@@ -103,8 +103,11 @@ void Scene::draw(const ngl::Mat4 &_globalMouseTx) const
               m_transform->setPosition(w->centre);
               m_transform->setScale(w->size, w->size, w->size);
               m_transform->setRotation(getRotationFromY(ngl::Vec3(w->a,w->b,w->c)));
-              ngl::Mat4 MVP= m_transform->getMatrix()
-                             *_globalMouseTx* m_cam->getVPMatrix();
+              ngl::Mat4 MVP= m_cam->getVPMatrix() *
+                             _globalMouseTx *
+                             m_transform->getMatrix();
+
+
               shader->setUniform("MVP",MVP);
               prim->draw("wall");
           }
