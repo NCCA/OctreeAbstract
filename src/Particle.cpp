@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-Particle::Particle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Colour _c, GLfloat _r, Scene *_parent)
+Particle::Particle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Vec3 _c, GLfloat _r, Scene *_parent)
 {
     // set the particles position on direction
     m_pos=_pos;
@@ -22,15 +22,15 @@ void Particle::draw(const ngl::Mat4 &_globalMouseTx) const
 
     ngl::ShaderLib *shader=ngl::ShaderLib::instance();
     (*shader)["nglDiffuseShader"]->use();
-    shader->setUniform("Colour",m_colour);
+    shader->setUniform("Colour",ngl::Vec4(m_colour,1.0f));
     ngl::Transformation t;
     t.setPosition(m_pos);
     t.setScale(m_radius,m_radius,m_radius);
-    ngl::Mat4 MVP=m_parent->getCamera()->getVPMatrix()*
+    ngl::Mat4 MVP=m_parent->getProject()*m_parent->getView()*
                   _globalMouseTx *
                   t.getMatrix();
 
-    normalMatrix=m_parent->getCamera()->getViewMatrix()*
+    normalMatrix=m_parent->getView()*
                  _globalMouseTx*
                  t.getMatrix();
 

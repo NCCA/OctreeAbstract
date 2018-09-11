@@ -3,18 +3,19 @@
 #include <ngl/Random.h>
 #include <ngl/NGLStream.h>
 
-Scene::Scene(ngl::Transformation *_t,  ngl::Camera *_cam)
+Scene::Scene(ngl::Transformation *_t,  ngl::Mat4 *_view, ngl::Mat4 *_project)
 {
     m_numParticles = 0;
     m_transform=_t;
-    m_cam=_cam;
+    m_view=_view;
+    m_project=_project;
     BoundingBox bb;
     bb.m_minx = bb.m_miny = bb.m_minz = -10.0;
     bb.m_maxx = bb.m_maxy = bb.m_maxz = 10.0;
     collisionTree.reset( new ParticleOctree (4, bb)); // control the height of the octree
 }
 
-void Scene::addParticle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Colour _c, GLfloat _r)
+void Scene::addParticle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Vec3 _c, GLfloat _r)
 {
   ngl::Random *rng=ngl::Random::instance();
   float r=rng->randomPositiveNumber(_r)+0.05f;
@@ -103,7 +104,7 @@ void Scene::draw(const ngl::Mat4 &_globalMouseTx) const
               m_transform->setPosition(w->centre);
               m_transform->setScale(w->size, w->size, w->size);
               m_transform->setRotation(getRotationFromY(ngl::Vec3(w->a,w->b,w->c)));
-              ngl::Mat4 MVP= m_cam->getVPMatrix() *
+              ngl::Mat4 MVP= *(m_project)* *(m_view) *
                              _globalMouseTx *
                              m_transform->getMatrix();
 

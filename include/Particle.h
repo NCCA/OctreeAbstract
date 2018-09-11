@@ -1,9 +1,7 @@
-#ifndef __PARTICLE__H_
-#define __PARTICLE__H_
+#ifndef PARTICLE_H_
+#define PARTICLE_H_
 
-#include <ngl/Camera.h>
 #include <ngl/Vec3.h>
-#include <ngl/Colour.h>
 #include <ngl/Transformation.h>
 #include <ngl/ShaderLib.h>
 #include <ngl/VAOPrimitives.h>
@@ -31,7 +29,7 @@ public:
     /// @param[in] _c the colour of the particle
     /// @param[in] _shaderName the name of the shader to use
     /// @param[in] _parent the parent (Emitter used to query global values)
-    Particle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Colour _c, GLfloat _r,  Scene *_parent);
+    Particle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Vec3 _c, GLfloat _r,  Scene *_parent);
     /// @brief  brief destructor
 
     ~Particle();
@@ -58,7 +56,7 @@ protected:
     /// @brief  Direction of the Particle
     ngl::Vec3 m_dir;
     /// @brief   Colour of the Particle
-    ngl::Colour m_colour;
+    ngl::Vec3 m_colour;
     /// @brief the parent Emitter
     Scene *m_parent;
     /// @brief the current radius for the sphere

@@ -1,9 +1,7 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
+#ifndef SCENE_H_
+#define SCENE_H_
 
-#include <ngl/Camera.h>
 #include <ngl/Vec3.h>
-#include <ngl/Colour.h>
 #include <list>
 #include "Particle.h"
 #include "AbstractOctree.h"
@@ -34,7 +32,7 @@ class Scene
     /// @brief ctor
     /// @param[in] _t a pointer to the global transform stack
     /// @param[in] _cam a pointer to the global camera
-    Scene(ngl::Transformation *_t,  ngl::Camera *_cam);
+    Scene(ngl::Transformation *_t,  ngl::Mat4 *_view, ngl::Mat4 *_project);
 
     /// @dtor will explicitly call the Particle dtors as they are stored as pointers
     ~Scene();
@@ -48,14 +46,15 @@ class Scene
     /// @param[in] _c   the color of this sphere
     /// @param[in] _r   the radius of this particle sphere
     /// @param[in] _ml  the maximum life of this particle
-    void addParticle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Colour _c, GLfloat _r);
+    void addParticle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Vec3 _c, GLfloat _r);
     /// @brief accessor for the number of particles stored in the class
     /// @returns the number of particles
-    inline unsigned int getNumParticles()const {return m_numParticles;}
+    unsigned int getNumParticles()const {return m_numParticles;}
     /// @brief get the global camera
-    inline   ngl::Camera *getCamera()   {return m_cam;}
+    ngl::Mat4 getView()   {return *m_view;}
+    ngl::Mat4 getProject() {return *m_project;}
     /// @brief get the global transform stack
-    inline ngl::Transformation *getTransform() const {return m_transform;}
+    ngl::Transformation *getTransform() const {return m_transform;}
     /// @brief a method to clear all particles
     void clearParticles();
     /// @brief add a new wall
@@ -81,7 +80,8 @@ class Scene
     ngl::Transformation *m_transform;
     /// @brief a pointer to the current camera, this is used for accesing the VP matrix to load to the
     /// shader
-    ngl::Camera *m_cam;
+    ngl::Mat4 *m_view;
+    ngl::Mat4 *m_project;
     /// @brief the number of particles
     unsigned int m_numParticles;
     /// @brief the wall list
