@@ -1,12 +1,12 @@
 #ifndef NGLSCENE_H_
 #define NGLSCENE_H_
-#include <QTime>
-#include <QOpenGLWindow>
 #include <ngl/Transformation.h>
 #include <ngl/Text.h>
 #include <ngl/Mat4.h>
 #include "Scene.h"
 #include "Particle.h"
+#include <QTime>
+#include <QOpenGLWindow>
 #include <memory>
 
 //----------------------------------------------------------------------------------------------------------------------
