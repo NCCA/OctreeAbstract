@@ -154,9 +154,9 @@ void Scene::collisionWithWalls()
         {
             wallNormal.m_x = w->a; wallNormal.m_y = w->b; wallNormal.m_z = w->c;
             dist = oldP.m_x * w->a + oldP.m_y * w->b + oldP.m_z * w->c + w->d - radius;
-            if(dist < 0.0) // penerate the wall
+            if(dist < 0.0f) // penerate the wall
             {
-               newP = oldP - 2.0*dist*wallNormal;
+               newP = oldP - 2.0f*dist*wallNormal;
                newV = -oldV.dot(wallNormal)*wallNormal+(oldV-oldV.dot(wallNormal)*wallNormal);
                p->setPosition(newP);
                p->setSpeed(newV);

@@ -1,4 +1,3 @@
-#include <boost/foreach.hpp>
 #include "ParticleOctree.h"
 #include "Particle.h"
 
@@ -6,7 +5,7 @@ void  ParticleOctree::checkCollisionOnNode(TreeNode <Particle> *node)
 {
     if(node->m_height !=1)
     {
-        for(int i=0;i<8;++i)
+        for(size_t i=0;i<8;++i)
         {
             checkCollisionOnNode(node->m_child[i]);
         }
@@ -19,7 +18,7 @@ void  ParticleOctree::checkCollisionOnNode(TreeNode <Particle> *node)
         }
         ngl::Vec3 P, Q, Vp, N, force;
         float Rp, Rq, dist, speed;
-        BOOST_FOREACH(Particle *currentParticle,node->m_objectList)
+        for(auto *currentParticle : node->m_objectList)
         {
             P = currentParticle->getPosition();
             Vp = currentParticle->getCurrentSpeed();
@@ -27,7 +26,7 @@ void  ParticleOctree::checkCollisionOnNode(TreeNode <Particle> *node)
             Rp = currentParticle->getRadius();
             force.m_x = force.m_y = force.m_z = 0.0;
 
-            BOOST_FOREACH(Particle *testParticle,node->m_objectList )
+            for(auto *testParticle : node->m_objectList )
             {
                 // no need to self test
                 if(testParticle==currentParticle)

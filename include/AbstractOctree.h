@@ -1,5 +1,5 @@
-#ifndef ABSTRACTOCTREE__H_
-#define ABSTRACTOCTREE__H_
+#ifndef ABSTRACTOCTREE_H_
+#define ABSTRACTOCTREE_H_
 #include <vector>
 #include <iostream>
 #include <array>
@@ -103,31 +103,31 @@ public:
           if(i%2==0) // i = 0, 2, 4, 6
           {
             childLimit.m_minx = _limit.m_minx;
-            childLimit.m_maxx = (_limit.m_maxx+_limit.m_minx)/2.0;
+            childLimit.m_maxx = (_limit.m_maxx+_limit.m_minx)/2.0f;
           }
           else // i = 1, 3, 5, 7
           {
-            childLimit.m_minx = (_limit.m_maxx+_limit.m_minx)/2.0;
+            childLimit.m_minx = (_limit.m_maxx+_limit.m_minx)/2.0f;
             childLimit.m_maxx = _limit.m_maxx;
           }
           if(i==0 || i==1 || i==4 || i==5)
           {
             childLimit.m_miny = _limit.m_miny;
-            childLimit.m_maxy = (_limit.m_maxy + _limit.m_miny)/2.0;
+            childLimit.m_maxy = (_limit.m_maxy + _limit.m_miny)/2.0f;
           }
           else
           {
-            childLimit.m_miny = (_limit.m_maxy + _limit.m_miny)/2.0;
+            childLimit.m_miny = (_limit.m_maxy + _limit.m_miny)/2.0f;
             childLimit.m_maxy = _limit.m_maxy;
           }
           if(i<4)
           {
             childLimit.m_minz = _limit.m_minz;
-            childLimit.m_maxz = (_limit.m_maxz+_limit.m_minz)/2.0;
+            childLimit.m_maxz = (_limit.m_maxz+_limit.m_minz)/2.0f;
           }
           else
           {
-            childLimit.m_minz = (_limit.m_maxz + _limit.m_minz)/2.0;
+            childLimit.m_minz = (_limit.m_maxz + _limit.m_minz)/2.0f;
             childLimit.m_maxz = _limit.m_maxz;
           }
          createTree(_parent->m_child[i], _height, childLimit);
