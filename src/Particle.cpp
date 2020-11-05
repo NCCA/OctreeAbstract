@@ -6,7 +6,6 @@ Particle::Particle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Vec3 _c, GLfloat _r, Sce
     m_pos=_pos;
     m_dir=_dir;
     m_colour=_c;
-
     m_radius=_r;
     m_parent=_parent;
 }
@@ -20,9 +19,8 @@ void Particle::draw(const ngl::Mat4 &_globalMouseTx) const
 {
   ngl::Mat3 normalMatrix;
 
-    ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-    (*shader)["nglDiffuseShader"]->use();
-    shader->setUniform("Colour",ngl::Vec4(m_colour,1.0f));
+    ngl::ShaderLib::use("nglDiffuseShader");
+    ngl::ShaderLib::setUniform("Colour",ngl::Vec4(m_colour,1.0f));
     ngl::Transformation t;
     t.setPosition(m_pos);
     t.setScale(m_radius,m_radius,m_radius);
@@ -35,12 +33,12 @@ void Particle::draw(const ngl::Mat4 &_globalMouseTx) const
                  t.getMatrix();
 
     normalMatrix.inverse().transpose();
-    shader->setUniform("MVP",MVP);
-    shader->setUniform("normalMatrix",normalMatrix);
+    ngl::ShaderLib::setUniform("MVP",MVP);
+    ngl::ShaderLib::setUniform("normalMatrix",normalMatrix);
 
 
     // get an instance of the VBO primitives for drawing
-    ngl::VAOPrimitives::instance()->draw("sphere");
+    ngl::VAOPrimitives::draw("sphere");
 
 }
 

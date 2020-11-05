@@ -1,6 +1,5 @@
 #include <QMouseEvent>
 #include <QGuiApplication>
-
 #include "NGLScene.h"
 #include <ngl/Transformation.h>
 #include <ngl/NGLInit.h>
@@ -47,7 +46,7 @@ void NGLScene::initializeGL()
 {
   // we must call this first before any other GL commands to load and link the
   // gl commands from the lib, if this is not done program will crash
-  ngl::NGLInit::instance();
+  ngl::NGLInit::initialize();
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
@@ -58,31 +57,25 @@ void NGLScene::initializeGL()
   ngl::Vec3 to(0,0,0);
   ngl::Vec3 up(0,1,0);
   m_view=ngl::lookAt(from,to,up);
-  // now to load the shader and set the values
-  // grab an instance of shader manager
-  // now to load the shader and set the values
-  // grab an instance of shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)["nglDiffuseShader"]->use();
-  shader->setUniform("Colour",1.0f,1.0f,0.0f,1.0f);
-  shader->setUniform("lightPos",1.0f,1.0f,1.0f);
-  shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
+  ngl::ShaderLib::use("nglDiffuseShader");
+  ngl::ShaderLib::setUniform("Colour",1.0f,1.0f,0.0f,1.0f);
+  ngl::ShaderLib::setUniform("lightPos",1.0f,1.0f,1.0f);
+  ngl::ShaderLib::setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
 
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
 
-  ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
-  prim->createSphere("sphere",1.0,20);
-  prim->createLineGrid("wall", 1, 1, 5);
+  ngl::VAOPrimitives::createSphere("sphere",1.0,20);
+  ngl::VAOPrimitives::createLineGrid("wall", 1, 1, 5);
 
    // create the default particle inital position
-  m_scene.reset(new  Scene(&m_transform,&m_view,&m_project));
+  m_scene=std::make_unique<Scene>(&m_transform,&m_view,&m_project);
   m_scene->addNewWall(ngl::Vec3(-10,0,0), 20, ngl::Vec3(1.0, 0.0, 0.0),true);
   m_scene->addNewWall(ngl::Vec3(10,0,0), 20, ngl::Vec3(-1.0, 0.0, 0.0),true);
   m_scene->addNewWall(ngl::Vec3(0,10,0), 20, ngl::Vec3(0.0, -1.0, 0.0),true);
   m_scene->addNewWall(ngl::Vec3(0,-10,0), 20, ngl::Vec3(0.0, 1.0, 0.0),true);
   m_scene->addNewWall(ngl::Vec3(0,0,10), 20, ngl::Vec3(0.0, 0.0, -1.0),false);
   m_scene->addNewWall(ngl::Vec3(0,0,-10), 20, ngl::Vec3(0.0, 0.0, 1.0),true);
-  m_text.reset(new ngl::Text(QFont("Arial",14)));
+  m_text= std::make_unique<ngl::Text>("fonts/Arial.ttf",14);
 
   currentTime = currentTime.currentTime();
 
@@ -109,10 +102,8 @@ void NGLScene::paintGL()
   int msecsPassed = currentTime.msecsTo(newTime);
   currentTime = newTime;
 
-  // grab an instance of the shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
   // clear the screen and depth buffer
-  shader->use("nglDiffuseShader");
+  ngl::ShaderLib::use("nglDiffuseShader");
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   ngl::Mat4 rotX;
@@ -127,23 +118,18 @@ void NGLScene::paintGL()
   m_mouseGlobalTX.m_m[3][1] = m_modelPos.m_y;
   m_mouseGlobalTX.m_m[3][2] = m_modelPos.m_z;
   m_scene->draw(m_mouseGlobalTX);
-  QString text;
-  text.sprintf("number of particles %d",m_scene->getNumParticles());
   m_text->setColour(1,1,1);
-  m_text->renderText(10,10,text);
-  m_text->renderText(10,30,QString("1 add Particle"));
-  text.sprintf("framerate is %d",(int)(1000.0/msecsPassed));
-  m_text->renderText(10,50,text);
-  m_text->renderText(10,70,QString("Space clears all particles"));
+  m_text->renderText(10,700,fmt::format("number of particles {}",m_scene->getNumParticles()));
+  m_text->renderText(10,680,"1 add Particle");
+  m_text->renderText(10,660,fmt::format("framerate is {}",(1000.0f/msecsPassed)));
+  m_text->renderText(10,640,"Space clears all particles");
 }
 
 void NGLScene::addParticles()
 {
     m_scene->clearParticles();
-
     // initial box [-1.0, 1.0]
     // evenly create 1000 particles inside the box
-    ngl::Random *rng=ngl::Random::instance();
     ngl::Vec3 dir(0.0f,0.0f,0.0f);
     ngl::Vec3 emitterPos;
 
@@ -156,9 +142,9 @@ void NGLScene::addParticles()
             for(float k=-9.5;k<10; k+=1)
             {
                 emitterPos.m_z = k;
-                dir=rng->getRandomVec3();
+                dir=ngl::Random::getRandomVec3();
                 dir *=0.05f;
-                m_scene->addParticle(emitterPos, dir, rng->getRandomNormalizedVec3(), 0.3f); // emitterPos, initialSpeed, colour, radius,
+                m_scene->addParticle(emitterPos, dir, ngl::Random::getRandomNormalizedVec3(), 0.3f); // emitterPos, initialSpeed, colour, radius,
             }
         }
     }

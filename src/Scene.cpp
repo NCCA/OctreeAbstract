@@ -12,15 +12,14 @@ Scene::Scene(ngl::Transformation *_t,  ngl::Mat4 *_view, ngl::Mat4 *_project)
     BoundingBox bb;
     bb.m_minx = bb.m_miny = bb.m_minz = -10.0;
     bb.m_maxx = bb.m_maxy = bb.m_maxz = 10.0;
-    collisionTree.reset( new ParticleOctree (4, bb)); // control the height of the octree
+    collisionTree= std::make_unique< ParticleOctree> (4, bb); // control the height of the octree
 }
 
 void Scene::addParticle(ngl::Vec3 _pos, ngl::Vec3 _dir, ngl::Vec3 _c, GLfloat _r)
 {
-  ngl::Random *rng=ngl::Random::instance();
-  float r=rng->randomPositiveNumber(_r)+0.05f;
+  float r=ngl::Random::randomPositiveNumber(_r)+0.05f;
   Particle *p = new Particle(_pos, _dir, _c, r, this);
-  m_particles.push_back(p);
+  m_particles.emplace_back(p);
   ++m_numParticles;
 }
 
@@ -92,9 +91,7 @@ void Scene::draw(const ngl::Mat4 &_globalMouseTx) const
         p->draw(_globalMouseTx);
     }
     // draw the walls
-    ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
-    ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-    (*shader)["nglColourShader"]->use();
+    ngl::ShaderLib::use("nglColourShader");
     for(auto w : m_walls)
     {
         if(w->draw_flag)
@@ -109,8 +106,8 @@ void Scene::draw(const ngl::Mat4 &_globalMouseTx) const
                              m_transform->getMatrix();
 
 
-              shader->setUniform("MVP",MVP);
-              prim->draw("wall");
+              ngl::ShaderLib::setUniform("MVP",MVP);
+              ngl::VAOPrimitives::draw("wall");
           }
         }
     }
